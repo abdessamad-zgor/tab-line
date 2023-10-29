@@ -1,5 +1,5 @@
 import { getAlpha,  defaultRowHeight } from "../lib/util.ts";  
-import Cell, {ColumnRefRow, RefCell, RowRefColumn} from "./Cell.tsx"
+import Cell, {ColumnRefRow , RowRefColumn} from "./Cell.tsx"
 import { sheetLayoutStore } from "../lib/sheetStore.ts";
 
 const Sheet = () => {

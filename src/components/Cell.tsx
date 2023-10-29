@@ -1,21 +1,44 @@
-import React, { MouseEventHandler, useEffect, useState } from 'react'
-import { getRefs, sheetLayoutStore, Column, Row } from '../lib/sheetStore'
+import React, { MouseEventHandler, ReactEventHandler, useEffect, useState, useRef } from 'react'
+import { getRefs, sheetLayoutStore, Column, Row, getCellValue } from '../lib/sheetStore'
 import { defaultRowHeight, defaultColumnWidth } from '../lib/util'
 
 type CellPropTypes = {
-  value?: string|number
   columnref : string,
   rowref: number
 }
 /**
- *
  * Cell - Component repesenting a Cell is an Tabline Spreadsheet
  * */
-const Cell : React.FC<CellPropTypes>= ({value, columnref, rowref}) => {
-  const [column, row] = getRefs(columnref, rowref)
+const Cell : React.FC<CellPropTypes>= ({columnref, rowref}) => {
+  const [column, row] = getRefs(columnref, rowref);
+  const {currentCell, selectCell} = sheetLayoutStore((state)=>({currentCell:state.currentCell, selectCell: state.selectCell}));
+  const [isSelected, setIsSelected] = useState(false);
+  const cellRef = useRef<HTMLDivElement|null>(null)
+  const cellValue = getCellValue({columnref, rowref})
+
+  useEffect(()=>{
+    if(currentCell){
+      if(columnref!=currentCell.columnref || rowref != currentCell.rowref){
+        setIsSelected(false);
+        cellRef.current?.blur()
+      } else {
+        cellRef.current?.focus()
+      }
+    }
+  }, [currentCell])
+
+  /**
+   * selects cell and toggles highlight 
+   */
+  const select: ReactEventHandler<HTMLDivElement> = (e)=>{
+    console.log(columnref, rowref)
+    selectCell({columnref, rowref});
+    setIsSelected(true)
+  }
+
   return (
-    <div className=" border border-stone-300 rounded-sm px-2" style={{width: column.w+"px", height: row.h+"px"}}>
-      {value ?? ""}
+    <div onClick={select} ref={cellRef} className={`rounded-sm px-2 relative ${isSelected?"border-2 border-sky-400":"border border-stone-300"}`} style={{width: column.w+"px", height: row.h+"px"}} contentEditable={isSelected} >
+      {cellValue.value}
     </div>
   )
 }
@@ -52,10 +75,10 @@ export function ColumnRefRow(){
     if (document.body.style.cursor != cursor) document.body.style.cursor = cursor;
   }, [cursor])
 
- useEffect(()=>{
-   console.log("columns: ",columns);
-   console.log("columnToResize: ",columnToResize);
- }, [columnToResize, columns])
+ //useEffect(()=>{
+ //  console.log("columns: ",columns);
+ //  console.log("columnToResize: ",columnToResize);
+ //}, [columnToResize, columns])
 
   const resize : MouseEventHandler<HTMLDivElement> = (e)=>{
     let x = e.clientX;
@@ -66,7 +89,7 @@ export function ColumnRefRow(){
       let [column,columnIndex] = [columns.find(c=>c.ref == (columnToResize as Column).ref),columns.findIndex(c=>c.ref == (columnToResize as Column).ref)];
       let columnLeftRect = colBorders[columnIndex];
       let dw = e.clientX - columnLeftRect.rightR;
-      console.log("dw: ",dw)
+      //console.log("dw: ",dw)
       resizeColumn((column as Column).ref, dw);
     }else{
       let colRow = colBorders.findIndex((cb)=>x<=cb.rightR+2 && x>=cb.rightR-2);
@@ -81,7 +104,7 @@ export function ColumnRefRow(){
     
     let x = e.clientX
     let refRow = e.currentTarget as HTMLDivElement;
-    console.log(e.currentTarget)
+    //console.log(e.currentTarget)
     let refRowRect = refRow.getBoundingClientRect();
     let colBorders = columns.map((c,i)=>({...c,rightR:c.w+refRowRect.left+columns.slice(0,i).reduce((acc,cur)=>acc+=cur.w, 0)}));
     let colRow = colBorders.findIndex((cb)=>x<=cb.rightR+5 && x>=cb.rightR-5);
@@ -98,7 +121,7 @@ export function ColumnRefRow(){
 
   return <div className='flex flex-1 flex-row min-w-full flex-nowrap' style={{userSelect:"none"}} onMouseMove={resize} onMouseDown={beginResize} onMouseUp={endResize}>
     {
-      columns.map((c,i)=><RefCell tRef={c.ref} w={c.w} h={defaultRowHeight} type="column"/>)
+      columns.map((c,i)=><RefCell key={i} tRef={c.ref} w={c.w} h={defaultRowHeight} type="column"/>)
     }
   </div>
 }
@@ -110,21 +133,20 @@ export function RowRefColumn() {
 
   useEffect( ()=>{
     if (document.body.style.cursor != cursor) document.body.style.cursor = cursor;
-    console.log(cursor);
   }, [cursor])
 
- useEffect(()=>{
-   console.log("rows: ",rows);
-   console.log("rowToResize: ",rowToResize);
- }, [rowToResize, rows])
+ //useEffect(()=>{
+ //  console.log("rows: ",rows);
+ //  console.log("rowToResize: ",rowToResize);
+ //}, [rowToResize, rows])
 
   const resize : MouseEventHandler<HTMLDivElement> = (e)=>{
     let y = e.clientY;
     let refRow = e.currentTarget as HTMLDivElement;
-    console.log("rowColumnDiv: ",refRow)
+    //console.log("rowColumnDiv: ",refRow)
     let refRowRect = refRow.getBoundingClientRect();
     let rowBorders = rows.map((c,i)=>({...c,bottomR:c.h+refRowRect.top+rows.slice(0,i).reduce((acc,cur)=>acc+=cur.h, 0)}));
-    console.log("rowBorders: ", rowBorders)
+    //console.log("rowBorders: ", rowBorders)
     if(rowToResize!=null){
       let [row,rowIndex] = [rows.find(c=>c.ref == (rowToResize as Row).ref),rows.findIndex(c=>c.ref == (rowToResize as Row).ref)];
       let rowLeftRect = rowBorders[rowIndex];
@@ -132,7 +154,7 @@ export function RowRefColumn() {
       resizeRow((row as Row).ref, dh);
     }else{
       let rowCol = rowBorders.findIndex((cb)=>y<=cb.bottomR+2 && y>=cb.bottomR-2);
-      console.log(rowCol);
+     // console.log(rowCol);
       if(rowCol>=0)
         setCursor("row-resize");
       else
@@ -143,7 +165,7 @@ export function RowRefColumn() {
   const beginResize : MouseEventHandler<HTMLDivElement> = (e)=>{ 
     let y = e.clientY
     let refRow = e.currentTarget as HTMLDivElement;
-    console.log(e.currentTarget)
+    // console.log(e.currentTarget)
     let refColRect = refRow.getBoundingClientRect();
     let rowBorders = rows.map((c,i)=>({...c,bottomR:c.h+refColRect.top+rows.slice(0,i).reduce((acc,cur)=>acc+=cur.h, 0)}));
     let rowCol = rowBorders.findIndex((r)=>y<=r.bottomR+5 && y>=r.bottomR-5);
@@ -160,7 +182,7 @@ export function RowRefColumn() {
 
   return <div className='flex flex-col justify-center items-center' style={{userSelect:"none"}} onMouseMove={resize} onMouseDown={beginResize} onMouseUp={endResize}>
     {
-      rows.map((r)=><RefCell type={"row"} h={r.h} w={defaultRowHeight} tRef={r.ref}/>)
+      rows.map((r,i)=><RefCell key={i} type={"row"} h={r.h} w={defaultRowHeight} tRef={r.ref}/>)
     }
   </div>
 }
