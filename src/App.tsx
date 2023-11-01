@@ -1,5 +1,5 @@
-import Sheet  from './components/Sheet';
-import { Toolbar } from './components/Toolbar';
+import Sheet from './components/Sheet';
+import Toolbar from './components/Toolbar';
 
 function App() {
   
