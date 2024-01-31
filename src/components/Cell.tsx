@@ -1,68 +1,49 @@
 import React, { ReactEventHandler, useEffect, useState, useRef } from 'react'
-import { getRefs, layoutStore } from '../lib/state/layout';
-import { getCellValue, dataStore } from '../lib/state/data';
-import { evaluateExpression } from '../lib/expression/evaluater';
+import { layoutStore as layout, CellStyle, Row, Column } from '../lib/layout';
+import {getValue} from "../lib/grid/store.ts";
 
 type CellPropTypes = {
-  columnref : string,
-  rowref: number
+  column: Column,
+  row: Row,
+  style: CellStyle,
+  onInput: (e: any)=>void,
+  onSelect: ()=>void
 }
 /**
  * Cell - Component repesenting a Cell is an Tabline Spreadsheet
  * */
-const Cell : React.FC<CellPropTypes>= ({columnref, rowref}) => {
-  const [column, row] = getRefs(columnref, rowref);
-  const {currentCell, selectCell} = layoutStore((state)=>({currentCell:state.currentCell, selectCell: state.selectCell}));
-  const {updateCell} = dataStore(state=>({updateCell: state.updateCell}));
-  const [isSelected, setIsSelected] = useState(false);
-  const cellRef = useRef<HTMLTextAreaElement|null>(null);
-  const cellValue = getCellValue({columnref, rowref});
-  const [evaluationResult, setEvaluationResult] = useState(evaluateExpression(cellValue.value.toString()))
+const Cell : React.FC<CellPropTypes>= ({column, row, style, onInput, onSelect}) => {
+  const {selectedCell} = layout((state)=>({selectedCell: state.selectedCell}))
 
-  useEffect(()=>{
-    if(currentCell){
-      if(columnref!=currentCell.columnref || rowref != currentCell.rowref){
-        setIsSelected(false);
-        cellRef.current?.blur();
-      } else {
-        cellRef.current?.focus();
+  useEffect(
+    ()=>{
+      if((column.ref+row.ref)==selectedCell){
+        
       }
     }
-  }, [currentCell]);
+  , [])
 
+  const EvalueteValue = (value: string)=>{
+    return value
+  } 
 
-  useEffect(()=>{
-    setEvaluationResult(evaluateExpression(cellValue.value.toString()))
-  }, [cellValue])
-
-  /**
-   * selects cell and toggles highlight 
-   */
-  const select: ReactEventHandler<HTMLTextAreaElement> = (e)=>{
-    selectCell({columnref, rowref});
-    setIsSelected(true);
+  const getCellStyle: (st: CellStyle)=>CssProperties = (st) =>{
+    return {
+      width: "100%",
+      height: "100%",
+      resize: "none",
+      outline: "none"
+    }
   }
 
-  const changeValue: ReactEventHandler<HTMLTextAreaElement> = (e)=>
-      updateCell({columnref, rowref}, (e.target as HTMLTextAreaElement).value);
-  
-
   return (
-  <textarea 
-      onClick={select}
-      ref={cellRef}
-      className={`p-px relative ${isSelected?"border border-sky-400":"border border-zinc-200"}`}
-      style={{width: column.w+"px", height: row.h+"px", resize: "none", overflow: 'hidden'}}
-      onChange={changeValue}
-      value={
-        isSelected?
-          cellValue.value.toString() : evaluationResult.error ?
-            "!Error": evaluationResult.data?.toString()}
+  <textarea
+      value = {EvalueteValue(getValue(column.ref+row.ref).toString())}
+      style = {getCellStyle(style)}
+      onChange={onInput}
+      onFocus={onSelect}
     />
   )
 }
 
 export default Cell;
-
-
-
