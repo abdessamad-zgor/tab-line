@@ -12,16 +12,19 @@ export type Column = {
 }
 
 export type CellStyle = {
-  fontSize: number,
+  fontSize: string,
   fontFamily: string,
   backgroundColor: string,
   color: string,
-  fontStyle: "normal"|"italic"|"bold",
-  border: {
-    strokeWidth: number,
-    color: string,
-    strokeStyle: string
-  }
+  fontWeight: string,
+  fontStyle: "normal"|"italic",
+  borderWidth: string,
+  borderColor: string,
+  borderStyle: string,
+}
+
+export const toCssRules = (style: CellStyle): React.CssProperties=>{
+
 }
 
 interface Layout {
@@ -44,17 +47,21 @@ export const layoutStore = create<Layout>()((set)=>({
   selectedCell: null,
   grid: {},
   resizeRow: (row: number, dh: number)=>{
-    set((state)=>{
-      state.rows[row-1] = {...state.rows[row-1], h: state.rows[row-1].h + dh};
-      return {...state, rows: [...state.rows]}
-    })
+    set((state)=>(
+      {
+        ...state,
+        rows: state.rows.map(r => r.ref==row ? {...r, h: r.h+dh} : r)}
+    ))
   },
   resizeColumn: (column: string, dw: number)=>{
-    set((state)=>{
-      let columnNum = toNumber(column)
-      state.columns[columnNum] = {...state.columns[columnNum], w: state.columns[columnNum].w + dw};
-      return {...state, columns: [...state.columns]}
-    })
+    set((state)=>(
+      {
+        ...state,
+        columns: state.columns.map(
+          c => c.ref==column ? 
+          {...c, w: c.w+dw} : c)
+      }
+    ))
   },
   addColumn: (col: string, position: 1|-1)=>{
   },

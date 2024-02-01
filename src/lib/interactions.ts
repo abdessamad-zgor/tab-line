@@ -1,25 +1,60 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import {getAlpha} from "./util.ts"
 import {dataStore as data} from "./grid/store.ts" 
-import {layoutStore as layout} from "./layout.ts"
+import {CellStyle, layoutStore as layout} from "./layout.ts"
+
+export function getValue(ref: string) {
+  return data(state=>(state.data[ref] || "")); 
+}
+
+export const useCell = (column: string, row: string, style: CellStyle)=>{
+
+  const [cellStyle, setCellStyle] = useState<CellStyle>(style)
+  const {selectedCell, selectCell} = layout(state=>({selectedCell: state.selectedCell, selectCell: state.selectCell}))
+  const {updateCell, value} = data(state=>({updateCell: state.updateCell, value: state.data[column+row]||""}))
 
 
-export const onInput = (ref: string)=>{
-  const {updateCell} = data(state=>({updateCell: state.updateCell}))
+  useEffect(()=>{
+    if (column+row == selectedCell){
+      setCellStyle({...cellStyle, borderColor: "#87CEFF", borderWidth: "2px"})
+    }else {
+      setCellStyle(style)
+    } 
+  
+  },[selectedCell, style]);
 
-  return (e: InputEvent)=>{
-    let value = (e?.currentTarget as HTMLInputElement).value;
-    updateCell(ref, value)
+  const onInput: React.ChangeEventHandler<HTMLTextAreaElement> = (e)=>{
+    let value = e.currentTarget.value;
+    updateCell(column+row, value)
+  }
+
+  const onSelect: React.FocusEventHandler<HTMLTextAreaElement> = ()=>{
+    selectCell(column+row)
+  }
+
+  const getCellStyle: (st: CellStyle) => React.CSSProperties = (st) =>{
+    return {
+      ...st,
+      width: "100%",
+      height: "100%",
+      resize: "none",
+      outline: "none",
+    }
+  }
+
+  const showValue = ()=>{
+    // insert interpreter
+    return column+row == selectedCell ? value : value
+  }
+
+  return {
+    styles : getCellStyle(cellStyle),
+    onInput,
+    onSelect,
+    showValue
   }
 }
 
-export const onSelect = (ref: string)=>{
-  const {selectCell} = layout(state=>({selectCell: state.selectCell}));
-
-  return ()=>{
-    selectCell(ref);
-  }
-}
 
 export const useResize = ()=>{
   const [rowToResize, setRowToResize] = useState<number|null>(null)
@@ -27,7 +62,6 @@ export const useResize = ()=>{
   const [prevPosition, setPrevPosition] = useState<[number, number]|null>(null)
   const {resizeColumn, resizeRow} = layout(
     state=>({resizeColumn: state.resizeColumn, resizeRow: state.resizeRow}));
-
 
   const selectResizeColumn = <T>(key: number): React.MouseEventHandler<T>=>{
 
@@ -80,11 +114,13 @@ export const useResize = ()=>{
     return (e)=>{
       
       if (rowToResize) {
-        let diff = e.clientY-prevPosition[1];
+        let diff = e.clientY-prevPosition[1] as number;
+        console.log(diff)
         setPrevPosition([e.clientX, e.clientY])
         resizeRow(rowToResize, diff)
       } else if (columnToResize) {
-        let diff = e.clientX-prevPosition[0]
+        let diff = e.clientX-prevPosition[0] as number
+        console.log(diff)
         setPrevPosition([e.clientX, e.clientY])
         resizeColumn(columnToResize, diff)
       }
