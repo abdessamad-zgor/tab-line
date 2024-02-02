@@ -12,40 +12,23 @@ export function toNumber(c:string): number {
     return alphabet.indexOf(c[0].toUpperCase())+(26+toNumber(c));
 }
 
-export const defaultColumnWidth = window?window.innerWidth*0.1:80;
-export const defaultRowHeight = 30;
-
-export const defaultColumnsNumber = 20;
-export const defaultRowsNumber = 20;
-
-export function initSheet(n: number, m: number){
-  return Array(n).fill("").map(()=>Array(m).fill({value: ""}));
+export function getColorCodes(){
+  let colors = ["#000000"];
+  for(let i=1; i<=23; i++){
+    colors.push("#"+Math.floor((i/23)*16777215)).toString(16);
+  }
+  return colors
 }
 
-// ********** Application types
-
-export type Row = {
-  h: number, // height of the row
-  ref: number, // reference to the row
+export function toPx(size: number) {
+  return size * (1+1/3)
 }
 
-export type Column = {
-  w: number, // width of the column
-  ref: string // reference to the column
-}
-/**
- * Represents a cell
- *
- * @property {string} columnref - the column ref of the cell
- * @property {number} rowref - the row ref of the cell
- * */
-export interface Cell  {
-  columnref: string,
-  rowref: number,
-  value: string|number,
+export function toPt(size: number) {
+  return size * (3/4)
 }
 
-export type CellReference = {
-  columnref: string,
-  rowref: number
+export const fontFamilies = {
+  "helvitica": "'Helvitica', sans serif",
+  "new times roman": "'New Times Roman', serif",
 }

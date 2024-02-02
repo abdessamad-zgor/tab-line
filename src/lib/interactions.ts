@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react"
-import {getAlpha} from "./util.ts"
+import {getAlpha, fontFamilies} from "./util.ts"
 import {dataStore as data} from "./grid/store.ts" 
 import {CellStyle, layoutStore as layout} from "./layout.ts"
 
@@ -144,5 +144,115 @@ export const useResize = ()=>{
     resizeOnMove,
     doneResize,
     isResizable
+  }
+}
+
+export const useStyles = ()=>{
+  const {selectedCell, setStyles} = layout(state=>({selectedStyle: state.selectedStyle, setStyles: state.setStyles}))
+
+  const setBackgroundColor = (color: string)=>{
+    if(selectedCell)
+      setStyles(selectedCell, {backgroundColor: color});
+  }
+
+
+  const getBackgroundColor = ()=>{
+    return layout(state=>({backgroundColor: state.styles[selectedCell]?.bacgroundColor || "#ffffff"}))
+  }
+
+  const setTextColor = (color: string)=>{
+    if(selectedCell)
+      setStyles(selectedCell, {color: color});
+  }
+
+  const getTextColor = ()=>{
+    return layout(state=>({color: state.styles[selectedCell]?.color || "#000000"}))
+  }
+
+  const setFontSize = (size: number)=>{
+    if(selectedCell)
+      setStyles(selectedCell, {fontSize: toPx(size)});
+  }
+
+  const getFontSize = ()=>{
+    return layout(state=>({fontSize: state.styles[selectedCell]?.fontSize || "12"}))
+  }
+
+  const setFontFamily = (fontFamily: keyof typeof fontFamilies)=>{
+    if(selectedCell)
+      setStyles(selectedCell, {fontFamily: fontFamily});
+  }
+
+  const getFontFamily = ()=>{
+    return layout(state=>({fontFamily: state.styles[selectedCell]?.fontFamily || "helvitica"}))
+  }
+
+  const setToBold = (unset?: boolean)=>{
+    if(selectedCell) {
+      if(!unset)
+        setStyles(selectedCell, {
+          fontWeight: 800
+        })
+      else 
+        setStyles(selectedCell, {
+          fontWeight: 500,
+        })
+      
+    }
+  }
+
+  const getBold = ()=>{
+    return layout(state=>({bold: state.styles[selectedCell]?.fontWeight >= 700 || false}))
+  }
+
+  const setToItalic = (unset?: boolean)=>{
+    if(selectedCell) {
+      if(!unset)
+        setStyles(selectedCell, {
+          fontStyle: "italic"
+        })
+      else 
+        setStyles(selectedCell, {
+          fontStyle: "normal"
+        })
+    }
+  }
+
+  const getItalic = ()=>{
+    return layout(state=>({bold: state.styles[selectedCell]?.fontStyle == "italic" || false}))
+  }
+
+  const setBorder = (width: number, style: string, color: string)=>{
+    if(selectedCell) 
+      setStyles(selectedCell, {borderWidth: width+"px", borderStyle: style, borderColor: color})
+  }
+
+  const getBorder = ()=>{
+    return layout(state=>({
+      border: !(state.styles[selectedCell]?.borderWidth+
+        " "+state.styles[selectedCell]?.borderStyle+
+        " "+state.styles[selectedCell]?.borderColor).includes("undefined") ?
+        (state.styles[selectedCell]?.borderWidth+
+        " "+state.styles[selectedCell]?.borderStyle+
+        " "+state.styles[selectedCell]?.borderColor): "none"
+    }))
+  }
+
+  return {
+    setBorder,
+    setToBold,
+    setToItalic,
+    setFontSize,
+    setFontFamily,
+    setTextColor,
+    setBackgroundColor,
+
+    getBorder,
+    getBold,
+    getItalic,
+    getFontSize,
+    getFontFamily,
+    getTextColor,
+    getBackgroundColor
   }
 }

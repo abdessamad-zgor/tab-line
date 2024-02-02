@@ -23,15 +23,11 @@ export type CellStyle = {
   borderStyle: string,
 }
 
-export const toCssRules = (style: CellStyle): React.CssProperties=>{
-
-}
-
 interface Layout {
   rows: any[],
   columns: any[],
   selectedCell: string|null,
-  grid: {[ref: string]: CellStyle},
+  styles: {[ref: string]: CellStyle},
   resizeRow: (row: number, dh: number)=>void,
   resizeColumn: (column: string, dw: number)=>void,
   addColumn: (col: string, position: 1|-1)=>void,
@@ -45,7 +41,7 @@ export const layoutStore = create<Layout>()((set)=>({
   rows: Array(20).fill(0).map((r, ri)=>({ref: ri+1, h: 35})),
   columns: Array(16).fill(0).map((c, ci)=>({ref: getAlpha(ci), w: 100})),
   selectedCell: null,
-  grid: {},
+  styles: {},
   resizeRow: (row: number, dh: number)=>{
     set((state)=>(
       {
@@ -72,5 +68,8 @@ export const layoutStore = create<Layout>()((set)=>({
   removeRow: (row: number)=>{
   },
   selectCell: (ref: string)=>
-    set((state)=>({...state, selectedCell: ref}))
+    set((state)=>({...state, selectedCell: ref})),
+  setStyles: (ref: string, styles: Partial<CellStyles>)=>{
+    set(state=>({...state, styles: {...state.styles, [ref]: {...(state.styles[ref]||{}), ...styles}}}))
+  }
 }))
