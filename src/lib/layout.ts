@@ -34,7 +34,8 @@ interface Layout {
   removeColumn: (col: string)=>void
   addRow: (row: number, position: 1|-1)=>void,
   removeRow: (row: number)=>void,
-  selectCell: (ref: string)=>void
+  selectCell: (ref: string)=>void,
+  setStyles: (ref: string, styles: Partial<CellStyle>)=>void
 }
 
 export const layoutStore = create<Layout>()((set)=>({
@@ -69,7 +70,7 @@ export const layoutStore = create<Layout>()((set)=>({
   },
   selectCell: (ref: string)=>
     set((state)=>({...state, selectedCell: ref})),
-  setStyles: (ref: string, styles: Partial<CellStyles>)=>{
+  setStyles: (ref: string, styles: Partial<CellStyles>)=>
     set(state=>({...state, styles: {...state.styles, [ref]: {...(state.styles[ref]||{}), ...styles}}}))
-  }
+  
 }))

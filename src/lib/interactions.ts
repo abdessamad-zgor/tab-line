@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react"
-import {getAlpha, fontFamilies} from "./util.ts"
+import {getAlpha, fontFamilies, toPx, toPt} from "./util.ts"
 import {dataStore as data} from "./grid/store.ts" 
 import {CellStyle, layoutStore as layout} from "./layout.ts"
 
@@ -114,12 +114,12 @@ export const useResize = ()=>{
     return (e)=>{
       
       if (rowToResize) {
-        let diff = e.clientY-prevPosition[1] as number;
+        let diff = e.clientY-(prevPosition as [number, number])[1] as number;
         console.log(diff)
         setPrevPosition([e.clientX, e.clientY])
         resizeRow(rowToResize, diff)
       } else if (columnToResize) {
-        let diff = e.clientX-prevPosition[0] as number
+        let diff = e.clientX-(prevPosition as [number, number])[1] as number;
         console.log(diff)
         setPrevPosition([e.clientX, e.clientY])
         resizeColumn(columnToResize, diff)
@@ -148,95 +148,86 @@ export const useResize = ()=>{
 }
 
 export const useStyles = ()=>{
-  const {selectedCell, setStyles} = layout(state=>({selectedStyle: state.selectedStyle, setStyles: state.setStyles}))
+  const {selectedCell, setStyles, styles} = layout(state=>({selectedCell: state.selectedCell, setStyles: state.setStyles, styles: state.styles}))
 
-  const setBackgroundColor = (color: string)=>{
-    if(selectedCell)
-      setStyles(selectedCell, {backgroundColor: color});
-  }
+  useEffect(()=>{
+    console.log(styles)
+  }, [styles])
 
-
-  const getBackgroundColor = ()=>{
-    return layout(state=>({backgroundColor: state.styles[selectedCell]?.bacgroundColor || "#ffffff"}))
-  }
-
-  const setTextColor = (color: string)=>{
-    if(selectedCell)
-      setStyles(selectedCell, {color: color});
-  }
-
-  const getTextColor = ()=>{
-    return layout(state=>({color: state.styles[selectedCell]?.color || "#000000"}))
-  }
-
-  const setFontSize = (size: number)=>{
-    if(selectedCell)
-      setStyles(selectedCell, {fontSize: toPx(size)});
-  }
-
-  const getFontSize = ()=>{
-    return layout(state=>({fontSize: state.styles[selectedCell]?.fontSize || "12"}))
-  }
-
-  const setFontFamily = (fontFamily: keyof typeof fontFamilies)=>{
-    if(selectedCell)
-      setStyles(selectedCell, {fontFamily: fontFamily});
-  }
-
-  const getFontFamily = ()=>{
-    return layout(state=>({fontFamily: state.styles[selectedCell]?.fontFamily || "helvitica"}))
-  }
-
-  const setToBold = (unset?: boolean)=>{
-    if(selectedCell) {
-      if(!unset)
-        setStyles(selectedCell, {
-          fontWeight: 800
-        })
-      else 
-        setStyles(selectedCell, {
-          fontWeight: 500,
-        })
-      
+  const setBackgroundColor = (selectedRef: string, color: string)=>{
+    return ()=>{
+      if(selectedRef)
+        setStyles(selectedRef, {backgroundColor: color});
+      console.log(selectedRef)
     }
   }
 
-  const getBold = ()=>{
-    return layout(state=>({bold: state.styles[selectedCell]?.fontWeight >= 700 || false}))
+  const setTextColor = (selectedRef: string, color: string)=>{
+    return ()=>{
+      if(selectedRef)
+        setStyles(selectedRef, {color: color});
+    }
   }
 
-  const setToItalic = (unset?: boolean)=>{
-    if(selectedCell) {
+  const setFontSize = (selectedRef: string, size: number)=>{
+    return ()=>{
+      if(selectedRef)
+        setStyles(selectedRef, {fontSize: toPx(size).toString()});
+    }
+  }
+
+  const setFontFamily = (selectedRef: string, fontFamily: keyof typeof fontFamilies)=>{
+    return ()=>{
+      if(selectedRef)
+        setStyles(selectedRef, {fontFamily: fontFamily});
+    }
+  }
+
+  const setToBold = (selectedRef: string, unset?: boolean)=>{
+    return ()=>{
+      if(selectedRef) {
+        if(!unset)
+          setStyles(selectedRef, {
+            fontWeight: "800"
+          })
+        else 
+          setStyles(selectedRef, {
+            fontWeight: "500",
+          })
+      }
+    }
+  }
+
+  const setToItalic = (selectedRef: string, unset?: boolean)=>{
+    return ()=>{
+    if(selectedRef) {
       if(!unset)
-        setStyles(selectedCell, {
+        setStyles(selectedRef, {
           fontStyle: "italic"
         })
       else 
-        setStyles(selectedCell, {
+        setStyles(selectedRef, {
           fontStyle: "normal"
         })
     }
+    }
   }
 
-  const getItalic = ()=>{
-    return layout(state=>({bold: state.styles[selectedCell]?.fontStyle == "italic" || false}))
+  const setBorder = (selectedRef: string, width: number, style: string, color: string)=>{
+    if(selectedRef) 
+      setStyles(selectedRef, {borderWidth: width+"px", borderStyle: style, borderColor: color})
   }
 
-  const setBorder = (width: number, style: string, color: string)=>{
-    if(selectedCell) 
-      setStyles(selectedCell, {borderWidth: width+"px", borderStyle: style, borderColor: color})
+  const getProperty = (k: keyof CellStyle) =>{
+    const {selectedCell, styles} = layout(state=>({selectedCell: state.selectedCell, styles: state.styles}))
+
+    if(!selectedCell || !styles[selectedCell] || !styles[selectedCell][k]) return null
+
+    return {
+      [k]: styles[selectedCell][k]
+    }
   }
 
-  const getBorder = ()=>{
-    return layout(state=>({
-      border: !(state.styles[selectedCell]?.borderWidth+
-        " "+state.styles[selectedCell]?.borderStyle+
-        " "+state.styles[selectedCell]?.borderColor).includes("undefined") ?
-        (state.styles[selectedCell]?.borderWidth+
-        " "+state.styles[selectedCell]?.borderStyle+
-        " "+state.styles[selectedCell]?.borderColor): "none"
-    }))
-  }
 
   return {
     setBorder,
@@ -246,13 +237,7 @@ export const useStyles = ()=>{
     setFontFamily,
     setTextColor,
     setBackgroundColor,
-
-    getBorder,
-    getBold,
-    getItalic,
-    getFontSize,
-    getFontFamily,
-    getTextColor,
-    getBackgroundColor
+    selectedCell,
+    getProperty
   }
 }

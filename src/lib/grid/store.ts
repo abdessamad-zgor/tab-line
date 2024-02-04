@@ -19,7 +19,4 @@ export const dataStore = create<SheetData>()((set)=>({
 }));
 
 
-export function getValue(ref: string) {
-  return dataStore(state=>(state.data[ref] || "")); 
-}
 

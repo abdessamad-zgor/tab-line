@@ -1,19 +1,25 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { useStyles } from '../../lib/interactions'
 
 function FontSize() {
-  const {setFontSize, getFontSize} = useStyles()
-  const {fontSize} = getFontSize();
+  const {setFontSize, selectedCell, getProperty} = useStyles()
+  const property = getProperty("fontSize");
+  const [size, setSize] = useState<string>(property?.fontSize || "12")
+
+  useEffect(()=>{
+    setFontSize(selectedCell as string, parseInt(size, 10))
+  },[size])
+
   return (
-    <div className='flex flex-row'>
-      <button onClick={()=>setFontSize((new Number(fontSize)).valueOf()+1)} className='border p-px rounded'>+</button>
+    <div className='flex flex-row w-1/6'>
+      <button onClick={setFontSize(selectedCell as string, parseInt(size, 10)+1)} className='border p-px rounded w-1/4'>+</button>
       <input 
         type="text"
-        value={fontSize}
-        onChange={(e)=>setFontSize((new Number(e.currentTarget.value)).valueOf())}
-        className='border p-px rounded'
+        value={property?.fontSize || "12"}
+        onChange={(e)=>setSize(e.target.value)}
+        className='border p-px rounded w-1/2'
       />
-      <button onClick={()=>setFontSize((new Number(fontSize)).valueOf()-1)} className='border p-px rounded'>-</button>
+      <button onClick={setFontSize(selectedCell as string, parseInt(size, 10)-1)} className='border p-px rounded w-1/4'>-</button>
     </div>
   )
 }
