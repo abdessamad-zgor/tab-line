@@ -1,26 +1,25 @@
 import React, {useState} from 'react'
 import {useStyles} from "../../lib/interactions";
-import {getColorCodes} from "../../lib/util.ts"
+import {colors} from "../../lib/util.ts"
 
 function CellBackground() {
   const [openColorPalette, setOpenColorPalette] = useState<boolean>(false)
   const {setBackgroundColor, selectedCell, getProperty} = useStyles()
   const property = getProperty("backgroundColor")
-  const colors = getColorCodes()
   return (
-    <button className="relative" 
+    <button className="relative p-2 rounded border shadow" 
       style={{backgroundColor: property?.backgroundColor || "#ffffff"}}
       onClick={()=>setOpenColorPalette(!openColorPalette)}>
       BG
       {
         openColorPalette ?
-          <div className="absolute top-[100%] grid grid-cols-6 gap-2">
+          <div className="absolute top-[100%] grid grid-cols-6 gap-2 w-[300%] p-2 rounded shadow bg-white">
             {
-              colors.map(cc=>
+              Object.keys(colors).map(cc=>
                 <span 
-                  style={{backgroundColor: cc}}
+                style={{backgroundColor: colors[cc as keyof typeof colors]}}
                   className={`w-[1em] h-[1em] rounded-full border`}
-                  onClick={setBackgroundColor(selectedCell as string, cc)}></span>
+                  onClick={setBackgroundColor(selectedCell as string, colors[cc as keyof typeof colors])}></span>
               )
             }
           </div>:

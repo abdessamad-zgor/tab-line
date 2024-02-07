@@ -15,7 +15,7 @@ function FontSize() {
       <button onClick={setFontSize(selectedCell as string, parseInt(size, 10)+1)} className='border p-px rounded w-1/4'>+</button>
       <input 
         type="text"
-        value={property?.fontSize || "12"}
+        value={size}
         onChange={(e)=>setSize(e.target.value)}
         className='border p-px rounded w-1/2'
       />
