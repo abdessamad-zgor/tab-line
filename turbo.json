@@ -2,12 +2,19 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "outputs": ["dist/**"]
+      "outputs": ["builds/**"]
     },
     "type-check": {},
     "publish": {},
     "dev": {
-      "cache": false
+      "cache": false,
+      "persistent": true
+    },
+    "deploy": {
+      "outputs": ["deployments/**"]
+    },
+    "deploy:prod": {
+      "outputs": ["deployments/prod/**"]
     }
   }
 }

@@ -1,16 +1,16 @@
 import React, {useState} from 'react'
-import {useStyles} from "../../lib/interactions";
-import {colors} from "../../lib/util.ts"
+import {useStyles} from "../../stores/interactions";
+import {colors} from "../../stores/util.ts"
 
-function TextColor() {
+function CellBackground() {
   const [openColorPalette, setOpenColorPalette] = useState<boolean>(false)
-  const {setTextColor, selectedCell, getProperty} = useStyles()
-  const property = getProperty("color")
+  const {setBackgroundColor, selectedCell, getProperty} = useStyles()
+  const property = getProperty("backgroundColor")
   return (
     <button className="relative p-2 rounded border shadow" 
       style={{backgroundColor: property?.backgroundColor || "#ffffff"}}
       onClick={()=>setOpenColorPalette(!openColorPalette)}>
-      TX
+      BG
       {
         openColorPalette ?
           <div className="absolute top-[100%] grid grid-cols-6 gap-2 w-[300%] p-2 rounded shadow bg-white">
@@ -19,7 +19,7 @@ function TextColor() {
                 <span 
                 style={{backgroundColor: colors[cc as keyof typeof colors]}}
                   className={`w-[1em] h-[1em] rounded-full border`}
-                  onClick={setTextColor(selectedCell as string, colors[cc as keyof typeof colors])}></span>
+                  onClick={setBackgroundColor(selectedCell as string, colors[cc as keyof typeof colors])}></span>
               )
             }
           </div>:
@@ -30,4 +30,4 @@ function TextColor() {
   )
 }
 
-export default TextColor
+export default CellBackground

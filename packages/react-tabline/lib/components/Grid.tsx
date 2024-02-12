@@ -1,8 +1,8 @@
 import React, {useState} from 'react'
-import { layoutStore as layout} from "../lib/layout"
+import { layoutStore as layout} from "../stores/layout"
 import {
   useResize
-} from "../lib/interactions.ts"
+} from "../stores/interactions.ts"
 import Cell from "./Cell.tsx"
 
 

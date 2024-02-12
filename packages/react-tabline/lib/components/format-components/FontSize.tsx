@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { useStyles } from '../../lib/interactions'
+import { useStyles } from '../../stores/interactions'
 
 function FontSize() {
   const {setFontSize, selectedCell, getProperty} = useStyles()

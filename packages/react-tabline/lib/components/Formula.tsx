@@ -1,6 +1,6 @@
 import React from 'react'
-import { layoutStore as layout} from '../lib/layout'
-import { dataStore as data } from '../lib/grid/store'
+import { layoutStore as layout} from '../stores/layout'
+import { dataStore as data } from '../stores/grid/store'
 
 function Formula() {
   const {selectedCell} = layout(state=>({selectedCell: state.selectedCell}))

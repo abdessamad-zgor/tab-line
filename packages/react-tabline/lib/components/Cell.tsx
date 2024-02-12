@@ -1,6 +1,6 @@
 import React, { ReactEventHandler, useEffect, useState, useRef } from 'react'
-import { layoutStore as layout, CellStyle, Row, Column } from '../lib/layout';
-import { useCell } from '../lib/interactions.ts';
+import { layoutStore as layout, CellStyle, Row, Column } from '../stores/layout';
+import { useCell } from '../stores/interactions.ts';
 
 type CellPropTypes = {
   column: Column,
