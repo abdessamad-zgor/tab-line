@@ -10,7 +10,7 @@ function TextColor() {
     <button className="relative p-2 rounded border shadow" 
       style={{backgroundColor: property?.backgroundColor || "#ffffff"}}
       onClick={()=>setOpenColorPalette(!openColorPalette)}>
-      BG
+      TX
       {
         openColorPalette ?
           <div className="absolute top-[100%] grid grid-cols-6 gap-2 w-[300%] p-2 rounded shadow bg-white">

@@ -119,7 +119,7 @@ export const useResize = ()=>{
         setPrevPosition([e.clientX, e.clientY])
         resizeRow(rowToResize, diff)
       } else if (columnToResize) {
-        let diff = e.clientX-(prevPosition as [number, number])[1] as number;
+        let diff = e.clientX-(prevPosition as [number, number])[0] as number;
         console.log(diff)
         setPrevPosition([e.clientX, e.clientY])
         resizeColumn(columnToResize, diff)

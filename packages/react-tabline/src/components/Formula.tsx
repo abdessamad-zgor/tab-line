@@ -6,7 +6,7 @@ function Formula() {
   const {selectedCell} = layout(state=>({selectedCell: state.selectedCell}))
   const {value, updateCell} = data(state=>({value: state.data[selectedCell as string] || "", updateCell: state.updateCell}))
   return (
-    <div className='flex flex-row gap-4'>
+    <div className='flex flex-row gap-4 px-4 py-2'>
       <span className='p-px border rounded'>{selectedCell}</span>
       <input 
         className='p-px border rounded w-full'
