@@ -11,5 +11,6 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "type-check": "turbo type-check"
-  }
+  },
+  "packageManager": "yarn"
 }
