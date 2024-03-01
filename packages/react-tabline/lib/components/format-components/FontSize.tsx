@@ -11,13 +11,13 @@ function FontSize() {
   },[size])
 
   return (
-    <div className='flex flex-row w-1/6'>
+    <div className='flex flex-row w-1/12'>
       <button onClick={setFontSize(selectedCell as string, parseInt(size, 10)+1)} className='border p-px rounded w-1/4'>+</button>
       <input 
         type="text"
         value={size}
         onChange={(e)=>setSize(e.target.value)}
-        className='border p-px rounded w-1/2'
+        className='border p-px rounded w-1/2 text-center'
       />
       <button onClick={setFontSize(selectedCell as string, parseInt(size, 10)-1)} className='border p-px rounded w-1/4'>-</button>
     </div>

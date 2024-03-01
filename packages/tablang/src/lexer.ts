@@ -10,7 +10,7 @@ enum TokenType {
 
   IDENTIFIER, REFERENCE, STR, NUM,
 
-  AND, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
+  AND, ELSE, FALSE, FN, FOR, IF, NIL, OR,
   PRINT, TRUE, LET, WHILE, ALERT,
 
   EOF
@@ -29,7 +29,7 @@ const keywords = new Map<string, TokenType>([
   ["alert", TokenType.ALERT],
   ["nil", TokenType.NIL],
   ["for", TokenType.FOR],
-  ["fun", TokenType.FUN]
+  ["fn", TokenType.FN]
 ])
 
 class Token {
@@ -161,6 +161,8 @@ export function lexer( input: string): Token[] {
               token,
               line)
           )
+        } else {
+          throw Error("TabError: Unexpected character "+c+" at line ")
         }
     }
   }
