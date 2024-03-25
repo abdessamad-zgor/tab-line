@@ -17,7 +17,7 @@ export type CellStyle = {
   backgroundColor: string,
   color: string,
   fontWeight: string,
-  fontStyle: "normal"|"italic",
+  fontStyle: "normal" | "italic",
   borderWidth: string,
   borderColor: string,
   borderStyle: string,
@@ -26,51 +26,52 @@ export type CellStyle = {
 interface Layout {
   rows: any[],
   columns: any[],
-  selectedCell: string|null,
-  styles: {[ref: string]: CellStyle},
-  resizeRow: (row: number, dh: number)=>void,
-  resizeColumn: (column: string, dw: number)=>void,
-  addColumn: (col: string, position: 1|-1)=>void,
-  removeColumn: (col: string)=>void
-  addRow: (row: number, position: 1|-1)=>void,
-  removeRow: (row: number)=>void,
-  selectCell: (ref: string)=>void,
-  setStyles: (ref: string, styles: Partial<CellStyle>)=>void
+  selectedCell: string | null,
+  styles: { [ref: string]: CellStyle },
+  resizeRow: (row: number, dh: number) => void,
+  resizeColumn: (column: string, dw: number) => void,
+  addColumn: (col: string, position: 1 | -1) => void,
+  removeColumn: (col: string) => void
+  addRow: (row: number, position: 1 | -1) => void,
+  removeRow: (row: number) => void,
+  selectCell: (ref: string) => void,
+  setStyles: (ref: string, styles: Partial<CellStyle>) => void
 }
 
-export const layoutStore = create<Layout>()((set)=>({
-  rows: Array(20).fill(0).map((r, ri)=>({ref: ri+1, h: 35})),
-  columns: Array(16).fill(0).map((c, ci)=>({ref: getAlpha(ci), w: 100})),
+export const layoutStore = create<Layout>()((set) => ({
+  rows: Array(20).fill(0).map((r, ri) => ({ ref: ri + 1, h: 35 })),
+  columns: Array(16).fill(0).map((c, ci) => ({ ref: getAlpha(ci), w: 100 })),
   selectedCell: null,
   styles: {},
-  resizeRow: (row: number, dh: number)=>{
-    set((state)=>(
+  resizeRow: (row: number, dh: number) => {
+    set((state) => (
       {
         ...state,
-        rows: state.rows.map(r => r.ref==row ? {...r, h: r.h+dh} : r)}
-    ))
-  },
-  resizeColumn: (column: string, dw: number)=>{
-    set((state)=>(
-      {
-        ...state,
-        columns: state.columns.map(
-          c => c.ref==column ? 
-          {...c, w: c.w+dw} : c)
+        rows: state.rows.map(r => r.ref == row ? { ...r, h: r.h + dh } : r)
       }
     ))
   },
-  addColumn: (col: string, position: 1|-1)=>{
+  resizeColumn: (column: string, dw: number) => {
+    set((state) => (
+      {
+        ...state,
+        columns: state.columns.map(
+          c => c.ref == column ?
+            { ...c, w: c.w + dw } : c)
+      }
+    ))
   },
-  removeColumn: (col: string)=>{
+  addColumn: (col: string, position: 1 | -1) => {
   },
-  addRow: (row: number, position: 1|-1)=>{
+  removeColumn: (col: string) => {
   },
-  removeRow: (row: number)=>{
+  addRow: (row: number, position: 1 | -1) => {
   },
-  selectCell: (ref: string)=>
-    set((state)=>({...state, selectedCell: ref})),
-  setStyles: (ref: string, styles: Partial<CellStyles>)=>
-    set(state=>({...state, styles: {...state.styles, [ref]: {...(state.styles[ref]||{}), ...styles}}}))
-  
+  removeRow: (row: number) => {
+  },
+  selectCell: (ref: string) =>
+    set((state) => ({ ...state, selectedCell: ref })),
+  setStyles: (ref: string, styles: Partial<CellStyle>) =>
+    set(state => ({ ...state, styles: { ...state.styles, [ref]: { ...(state.styles[ref] || {}), ...styles } } }))
+
 }))

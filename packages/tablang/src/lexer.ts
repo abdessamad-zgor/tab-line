@@ -19,21 +19,21 @@ export enum TokenType {
   EOF
 }
 
-const keywords = new Map<string, TokenType>([
-  ["and", TokenType.AND],
-  ["or", TokenType.OR],
-  ["if", TokenType.IF],
-  ["else", TokenType.ELSE],
-  ["print", TokenType.PRINT],
-  ["true", TokenType.TRUE],
-  ["false", TokenType.FALSE],
-  ["while", TokenType.WHILE],
-  ["let", TokenType.LET],
-  ["alert", TokenType.ALERT],
-  ["nil", TokenType.NIL],
-  ["for", TokenType.FOR],
-  ["fn", TokenType.FN],
-  ["return", TokenType.RETURN]
+const keywords = new Map<string, string>([
+  ["and", TokenType[TokenType.AND]],
+  ["or", TokenType[TokenType.OR]],
+  ["if", TokenType[TokenType.IF]],
+  ["else", TokenType[TokenType.ELSE]],
+  ["print", TokenType[TokenType.PRINT]],
+  ["true", TokenType[TokenType.TRUE]],
+  ["false", TokenType[TokenType.FALSE]],
+  ["while", TokenType[TokenType.WHILE]],
+  ["let", TokenType[TokenType.LET]],
+  ["alert", TokenType[TokenType.ALERT]],
+  ["nil", TokenType[TokenType.NIL]],
+  ["for", TokenType[TokenType.FOR]],
+  ["fn", TokenType[TokenType.FN]],
+  ["return", TokenType[TokenType.RETURN]]
 ])
 
 export class Token {
